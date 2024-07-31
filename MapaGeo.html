@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seleccionar coordenadas en un mapa con Leaflet.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #map {
+            height: 60vh;
+            width: 90%;
+            max-width: 800px;
+            margin: 20px 0;
+        }
+        #coordinates {
+            width: 90%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #coordinates label, #coordinates input, #coordinates button {
+            margin: 5px 0;
+        }
+        #coordinates input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #coordinates button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #coordinates button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h3>Ubica tu vivienda en el mapa, da click hasta para cargar el punto, luego da en el boton copiar coordenadas</h3>
+    <div id="map"></div>
+    <div id="coordinates">
+        <label for="lat">Latitud: </label>
+        <input type="text" id="lat" readonly>
+        <label for="lng">Longitud: </label>
+        <input type="text" id="lng" readonly>
+        <button id="copyButton">Copiar Coordenadas</button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([4.5794, -74.2168], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([4.5794, -74.2168]).addTo(map);
+
+        var lat, lng;
+
+        map.on('click', function(e) {
+            lat = e.latlng.lat;
+            lng = e.latlng.lng;
+
+            document.getElementById('lat').value = lat;
+            document.getElementById('lng').value = lng;
+
+            marker.setLatLng(e.latlng);
+        });
+
+        document.getElementById('copyButton').addEventListener('click', function() {
+            if (lat && lng) {
+                const coordinates = `${lat},${lng}`;
+                navigator.clipboard.writeText(coordinates).catch(err => {
+                    console.error('Error al copiar al portapapeles:', err);
+                });
+            } else {
+                alert('Por favor selecciona un punto en el mapa primero.');
+            }
+        });
+    </script>
+</body>
+</html>
